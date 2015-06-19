@@ -1,34 +1,24 @@
 ;(function (define) {
     'use strict';
-    define(['backbone.paginator', 'teams/js/models/topic'], function(BackbonePaginator, TopicModel) {
-        var TopicCollection = BackbonePaginator.requestPager.extend({
-            model: TopicModel,
-            paginator_core: {
-                type: 'GET',
-                accepts: 'application/json',
-                dataType: 'json',
-                url: function() {return this.url;}
-            },
-            paginator_ui: { // TODO: what is the significance of these values?
-                firstPage: 1,
-                currentPage: 1,
-                perPage: 50
-            },
-            sort_field: 'name',
-            server_api: {
-                'order_by': function() {return this.sort_field;},
-                'page_size': function() {return this.perPage;},
-                'page': function() {return this.currentPage;}
-            },
+    define(['common/js/components/collections/paging_collection', 'teams/js/models/topic', 'gettext'],
+        function(PagingCollection, TopicModel, gettext) {
+            var TopicCollection = PagingCollection.extend({
+                initialize: function(topics, options) {
+                    PagingCollection.prototype.initialize.call(this);
+                    this.isZeroIndexed = false;
+                    this.course_id = options.course_id;
+                    this.perPage = topics.results.length;
+                    this.server_api['course_id'] = function () { return this.course_id; };
+                    this.server_api['order_by'] = function () { return this.sortField; };
+                    delete this.server_api['sort_order']; // Sort order is not specified for the Team API
 
-            parse: function(response) {
-                this.totalCount = response.count;
-                this.currentPage = response.current_page;
-                this.totalPages = response.num_pages;
-                this.start = response.start;
-                return response.results;
-            }
-        });
-        return TopicCollection;
+                    this.registerSortableField('name', gettext('name'));
+                    this.registerSortableField('team_count', gettext('team count'));
+                    this.toggleSortField('name');
+                },
+
+                model: TopicModel
+            });
+            return TopicCollection;
     });
 }).call(this, define || RequireJS.define);

@@ -27,6 +27,16 @@
                 this.filterableFields = {};
             },
 
+            isZeroIndexed: false,
+            perPage: 10,
+
+            sortField: '',
+            sortDirection: 'descending',
+            sortableFields: {},
+
+            filterField: '',
+            filterableFields: {},
+
             paginator_core: {
                 type: 'GET',
                 dataType: 'json',
@@ -35,6 +45,7 @@
 
             paginator_ui: {
                 firstPage: function () { return this.isZeroIndexed ? 0 : 1; },
+                // Specifies the initial page during collection initialization
                 currentPage: function () { return this.isZeroIndexed ? 0 : 1; },
                 perPage: function () { return this.perPage; }
             },
@@ -53,21 +64,11 @@
                 return response.results;
             },
 
-            isZeroIndexed: false,
-            perPage: 10,
-
-            sortField: '',
-            sortDirection: 'descending',
-            sortableFields: {},
-
-            filterField: '',
-            filterableFields: {},
-
             /**
              * Returns the current page number as if numbering starts on page one, regardless of the indexing of the
              * underlying server API.
              */
-            currentOneIndexPage: function () {
+            getPage: function () {
                 return this.currentPage + (this.isZeroIndexed ? 1 : 0);
             },
 
@@ -80,29 +81,28 @@
             setPage: function (page) {
                 var oldPage = this.currentPage,
                     self = this;
-                this.goTo(page - (this.isZeroIndexed ? 1 : 0), {
-                    reset: true,
-                    success: function () {
+                this.goTo(page - (this.isZeroIndexed ? 1 : 0), {reset: true}).then(
+                    function () {
                         self.trigger('page_changed');
                     },
-                    error: function () {
+                    function () {
                         self.currentPage = oldPage;
                     }
-                });
+                );
             },
 
             /**
              * Returns true if the collection has a next page, false otherwise.
              */
             hasNextPage: function () {
-                return this.currentOneIndexPage() + 1 <= this.totalPages;
+                return this.getPage() < this.totalPages;
             },
 
             /**
              * Returns true if the collection has a previous page, false otherwise.
              */
             hasPreviousPage: function () {
-                return this.currentOneIndexPage() - 1 >= 1;
+                return this.getPage() > 1;
             },
 
             /**
@@ -110,7 +110,7 @@
              */
             nextPage: function () {
                 if (this.hasNextPage()) {
-                    this.setPage(this.currentOneIndexPage() + 1);
+                    this.setPage(this.getPage() + 1);
                 }
             },
 
@@ -119,7 +119,7 @@
              */
             previousPage: function () {
                 if (this.hasPreviousPage()) {
-                    this.setPage(this.currentOneIndexPage() - 1);
+                    this.setPage(this.getPage() - 1);
                 }
             },
 

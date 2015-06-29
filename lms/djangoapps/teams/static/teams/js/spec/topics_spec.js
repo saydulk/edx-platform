@@ -3,7 +3,9 @@ define([
 ], function (AjaxHelpers, TopicCollection, TopicsView) {
     'use strict';
     describe('TopicsView', function () {
-        var initialTopics, topicCollection, topicsView;
+        var initialTopics, topicCollection, topicsView, nextPageButtonCss;
+
+        nextPageButtonCss = '.next-page-link';
 
         function generateTopics(startIndex, stopIndex) {
             return _.map(_.range(startIndex, stopIndex + 1), function (i) {
@@ -41,7 +43,7 @@ define([
         }
 
         /**
-         * Verify that the topics list view renderes the expected topics
+         * Verify that the topics list view renders the expected topics
          * @param expectedTopics an array of topic objects we expect to see
          */
         function expectTopics(expectedTopics) {
@@ -70,7 +72,7 @@ define([
         }
 
         it('can render the first of many pages', function () {
-            expectHeader('Currently viewing 1 through 5 of 6 topics');
+            expectHeader('Showing 1-5 out of 6 total');
             expectTopics(initialTopics);
             expectFooter({currentPage: 1, totalPages: 2, isHidden: false});
         });
@@ -87,7 +89,7 @@ define([
                 },
                 {parse: true}
             );
-            expectHeader('Currently viewing 1 topic');
+            expectHeader('Showing 1 out of 1 total');
             expectTopics(initialTopics);
             expectFooter({currentPage: 1, totalPages: 1, isHidden: true});
         });
@@ -95,11 +97,11 @@ define([
         it('can change to the next page', function () {
             var requests = AjaxHelpers.requests(this),
                 newTopics = generateTopics(1, 1);
-            expectHeader('Currently viewing 1 through 5 of 6 topics');
+            expectHeader('Showing 1-5 out of 6 total');
             expectTopics(initialTopics);
             expectFooter({currentPage: 1, totalPages: 2, isHidden: false});
             expect(requests.length).toBe(0);
-            topicsView.$('.next-page-link').click();
+            topicsView.$(nextPageButtonCss).click();
             expect(requests.length).toBe(1);
             AjaxHelpers.respondWithJson(requests, {
                 "count": 6,
@@ -108,7 +110,7 @@ define([
                 "start": 5,
                 "results": newTopics
             });
-            expectHeader('Currently viewing 6 through 6 of 6 topics');
+            expectHeader('Showing 6-6 out of 6 total');
             expectTopics(newTopics);
             expectFooter({currentPage: 2, totalPages: 2, isHidden: false});
         });
@@ -127,7 +129,7 @@ define([
                 },
                 {parse: true}
             );
-            expectHeader('Currently viewing 6 through 6 of 6 topics');
+            expectHeader('Showing 6-6 out of 6 total');
             expectTopics(initialTopics);
             expectFooter({currentPage: 2, totalPages: 2, isHidden: false});
             topicsView.$('.previous-page-link').click();
@@ -139,7 +141,7 @@ define([
                 "start": 0,
                 "results": previousPageTopics
             });
-            expectHeader('Currently viewing 1 through 5 of 6 topics');
+            expectHeader('Showing 1-5 out of 6 total');
             expectTopics(previousPageTopics);
             expectFooter({currentPage: 1, totalPages: 2, isHidden: false});
         });
@@ -147,7 +149,7 @@ define([
         it('sets focus for screen readers', function () {
             var requests = AjaxHelpers.requests(this);
             spyOn($.fn, 'focus');
-            topicsView.$('.next-page-link').click();
+            topicsView.$(nextPageButtonCss).click();
             AjaxHelpers.respondWithJson(requests, {
                 "count": 6,
                 "num_pages": 2,
@@ -156,6 +158,19 @@ define([
                 "results": generateTopics(1, 1)
             });
             expect(topicsView.$('.sr-is-focusable').focus).toHaveBeenCalled();
+        });
+
+        it('does not change on server error', function () {
+            var requests = AjaxHelpers.requests(this),
+                expectInitialState = function () {
+                    expectHeader('Showing 1-5 out of 6 total');
+                    expectTopics(initialTopics);
+                    expectFooter({currentPage: 1, totalPages: 2, isHidden: false});
+                };
+            expectInitialState();
+            topicsView.$(nextPageButtonCss).click();
+            requests[0].respond(500);
+            expectInitialState();
         });
     });
 });

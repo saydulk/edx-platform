@@ -20,6 +20,8 @@
                 },
 
                 render: function() {
+                    var onFirstPage = !this.collection.hasPreviousPage(),
+                        onLastPage = !this.collection.hasNextPage();
                     if (this.hideWhenOnePage) {
                         if (this.collection.totalPages <= 1) {
                             this.$el.addClass('hidden');
@@ -28,11 +30,9 @@
                         }
                     }
                     this.$el.html(_.template(paging_footer_template, {
-                        current_page: this.collection.currentOneIndexPage(),
+                        current_page: this.collection.getPage(),
                         total_pages: this.collection.totalPages
                     }));
-                    var onFirstPage = !this.collection.hasPreviousPage();
-                    var onLastPage = !this.collection.hasNextPage();
                     this.$(".previous-page-link").toggleClass("is-disabled", onFirstPage).attr('aria-disabled', onFirstPage);
                     this.$(".next-page-link").toggleClass("is-disabled", onLastPage).attr('aria-disabled', onLastPage);
                     return this;
@@ -40,7 +40,7 @@
 
                 changePage: function() {
                     var collection = this.collection,
-                        currentPage = collection.currentOneIndexPage(),
+                        currentPage = collection.getPage(),
                         pageInput = this.$("#page-number-input"),
                         pageNumber = parseInt(pageInput.val(), 10),
                         validInput = true;

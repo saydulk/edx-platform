@@ -137,7 +137,7 @@ class BrowseTopicsTest(TeamsTabTest):
         """
         self.set_team_configuration({u"max_team_size": 10, u"topics": self.create_topics(2)})
         self.topics_page.visit()
-        self.assertEqual(len(self.topics_page.get_topic_cards()), 2)
+        self.assertEqual(len(self.topics_page.topic_cards), 2)
         self.assertEqual(self.topics_page.get_pagination_header_text(), 'Showing 1-2 out of 2 total')
         self.assertFalse(self.topics_page.pagination_controls_visible())
         self.assertFalse(self.topics_page.is_previous_page_button_enabled())
@@ -153,7 +153,7 @@ class BrowseTopicsTest(TeamsTabTest):
         """
         self.set_team_configuration({u"max_team_size": 10, u"topics": self.create_topics(20)})
         self.topics_page.visit()
-        self.assertEqual(len(self.topics_page.get_topic_cards()), 12)
+        self.assertEqual(len(self.topics_page.topic_cards), 12)
         self.assertEqual(self.topics_page.get_pagination_header_text(), 'Showing 1-12 out of 20 total')
         self.assertTrue(self.topics_page.pagination_controls_visible())
         self.assertFalse(self.topics_page.is_previous_page_button_enabled())
@@ -171,7 +171,7 @@ class BrowseTopicsTest(TeamsTabTest):
         self.set_team_configuration({u"max_team_size": 10, u"topics": self.create_topics(25)})
         self.topics_page.visit()
         self.topics_page.go_to_page(3)
-        self.assertEqual(len(self.topics_page.get_topic_cards()), 1)
+        self.assertEqual(len(self.topics_page.topic_cards), 1)
         self.assertTrue(self.topics_page.is_previous_page_button_enabled())
         self.assertFalse(self.topics_page.is_next_page_button_enabled())
 
@@ -203,8 +203,28 @@ class BrowseTopicsTest(TeamsTabTest):
         self.set_team_configuration({u"max_team_size": 10, u"topics": self.create_topics(13)})
         self.topics_page.visit()
         self.topics_page.press_next_page_button()
-        self.assertEqual(len(self.topics_page.get_topic_cards()), 1)
+        self.assertEqual(len(self.topics_page.topic_cards), 1)
         self.assertEqual(self.topics_page.get_pagination_header_text(), 'Showing 13-13 out of 13 total')
         self.topics_page.press_previous_page_button()
-        self.assertEqual(len(self.topics_page.get_topic_cards()), 12)
+        self.assertEqual(len(self.topics_page.topic_cards), 12)
         self.assertEqual(self.topics_page.get_pagination_header_text(), 'Showing 1-12 out of 13 total')
+
+    def test_topic_description_truncation(self):
+        """
+        Scenario: excessively long topic descriptions should be truncated so
+            as to fit within a topic card.
+        Given I am enrolled in a course with a team configuration and a topic
+            with a long description
+        When I visit the Teams page
+        And I browse topics
+        Then I should see a truncated topic description
+        """
+        initial_description = "A" + " really" * 50 + " long description"
+        self.set_team_configuration(
+            {u"max_team_size": 1, u"topics": [{"name": "", "id": "", "description": initial_description}]}
+        )
+        self.topics_page.visit()
+        truncated_description = self.topics_page.topic_cards[0].text
+        self.assertLess(len(truncated_description), len(initial_description))
+        self.assertTrue(truncated_description.endswith('...'))
+        self.assertIn(truncated_description.split('...')[0], initial_description)

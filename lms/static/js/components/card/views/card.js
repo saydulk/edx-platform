@@ -18,9 +18,10 @@
 ;(function (define) {
     'use strict';
     define(['jquery',
+            'underscore',
             'backbone',
             'text!templates/components/card/card.underscore'],
-        function ($, Backbone, cardTemplate) {
+        function ($, _, Backbone, cardTemplate) {
             var CardView = Backbone.View.extend({
                 events: {
                     'click .action' : 'action'
@@ -69,15 +70,20 @@
                 },
 
                 render: function () {
+                    var maxLength = 72,
+                        description = this.callIfFunction(this.description);
+                    if (description.length > maxLength) {
+                        description = description.substring(0, maxLength).trim() + '...'
+                    }
                     this.$el.html(this.template({
                         pennant: this.callIfFunction(this.pennant),
                         title: this.callIfFunction(this.title),
-                        description: this.callIfFunction(this.description),
+                        description: description,
                         action_class: this.callIfFunction(this.actionClass),
                         action_url: this.callIfFunction(this.actionUrl),
                         action_content: this.callIfFunction(this.actionContent)
                     }));
-                    var detailsEl = this.$el.find('.card-meta-details');
+                    var detailsEl = this.$el.find('.card-meta');
                     _.each(this.callIfFunction(this.details), function (detail) {
                         // Call setElement to rebind event handlers
                         detail.setElement(detail.el).render();

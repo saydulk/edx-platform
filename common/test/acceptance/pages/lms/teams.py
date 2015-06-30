@@ -7,7 +7,7 @@ from .course_page import CoursePage
 from ..common.paging import PaginatedUIMixin
 
 
-TOPIC_CARD_CSS = 'div.card-core-wrapper'
+TOPIC_CARD_CSS = 'div.wrapper-card-core'
 BROWSE_BUTTON_CSS = 'a.nav-item[data-index="1"]'
 
 
@@ -49,6 +49,7 @@ class BrowseTopicsPage(CoursePage, PaginatedUIMixin):
             return False
         return 'is-active' in button_classes[0]
 
-    def get_topic_cards(self):
+    @property
+    def topic_cards(self):
         """Return a list of the topic cards present on the page."""
         return self.q(css=TOPIC_CARD_CSS).results

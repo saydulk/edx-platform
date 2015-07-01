@@ -694,7 +694,7 @@ function (VideoPlayer, i18n, moment) {
         }
 
         return $.ajax({
-            url: ['https:', '//', this.config.ytTestUrl, '?id=', url,
+            url: ['https://', this.config.ytTestUrl, '?id=', url,
                 '&part=contentDetails&key=', this.config.ytKey ,'&referrer=*.edx.org/*'].join(''),
             timeout: this.config.ytTestTimeout,
             success: _.isFunction(callback) ? callback : null

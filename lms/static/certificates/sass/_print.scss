@@ -94,6 +94,11 @@
 // ------------------------------
 @media print {
 
+    html,
+    body {
+        page-break-after: "avoid"; // avoids a line break after the content if possible
+    }
+
     // hide elements not needed for print rendering
     .wrapper-banner-user,
     .wrapper-about,

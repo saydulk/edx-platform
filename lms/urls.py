@@ -11,10 +11,28 @@ import auth_exchange.views
 if settings.DEBUG or settings.FEATURES.get('ENABLE_DJANGO_ADMIN_SITE'):
     admin.autodiscover()
 
+def testing__clear_course_overviews(request):
+    from openedx.core.djangoapps.content.course_overviews.models import CourseOverview
+    from django.http import HttpResponse
+
+    all_overviews = CourseOverview.objects.all()
+    overviews_string_old = "<br/>".join([unicode(overview.id) for overview in all_overviews])
+
+    for ovr in all_overviews:
+        ovr.delete()
+
+    all_overviews = CourseOverview.objects.all()
+    overviews_string_new = "<br/>".join([unicode(overview.id) for overview in all_overviews])
+
+    return HttpResponse("CourseOverviews table:<br/>{}<br/><br/>Clearing table...<br/><br/><br/>CourseOverviews table:<br/>{}".format(
+        overviews_string_old, overviews_string_new
+    ))
+
 # Use urlpatterns formatted as within the Django docs with first parameter "stuck" to the open parenthesis
 # pylint: disable=bad-continuation
 urlpatterns = (
     '',
+    url(r'^clear_course_overviews', testing__clear_course_overviews),
 
     # certificate view
     url(r'^update_certificate$', 'certificates.views.update_certificate'),

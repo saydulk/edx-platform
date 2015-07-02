@@ -43,6 +43,11 @@ define(['jquery', 'backbone', 'underscore', 'common/js/components/views/list'],
                 expectListNames(['first model', 'second model', 'third model']);
             });
 
+            it('does not render subviews for an empty collection', function () {
+                listView.collection.set([]);
+                expectListNames([]);
+            });
+
             it('re-renders itself when the collection changes', function () {
                 expectListNames(['first model', 'second model', 'third model']);
                 listView.collection.set([{name: 'foo'}, {name: 'bar'}, {name: 'third model'}]);

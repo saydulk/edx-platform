@@ -72,10 +72,13 @@ class TeamsDashboardView(View):
                 not has_access(request.user, 'staff', course, course.id):
             raise Http404
 
-        topics = get_ordered_topics(course, 'name')
-        page = Paginator(topics, TOPICS_PER_PAGE).page(1)
-        serializer = PaginationSerializer(instance=page)
-        context = {"course": course, "topics": serializer.data, "topics_url": reverse('topics_list', request=request)}
+        sort_order = 'name'
+        topics = get_ordered_topics(course, sort_order)
+        topics_page = Paginator(topics, TOPICS_PER_PAGE).page(1)
+        topics_serializer = PaginationSerializer(instance=topics_page, context={'sort_order': sort_order})
+        context = {
+            "course": course, "topics": topics_serializer.data, "topics_url": reverse('topics_list', request=request)
+        }
         return render_to_response("teams/teams.html", context)
 
 
@@ -529,6 +532,7 @@ class TopicListView(GenericAPIView):
 
         page = self.paginate_queryset(topics)
         serializer = self.get_pagination_serializer(page)
+        serializer.context = {'sort_order': ordering}
         return Response(serializer.data)  # pylint: disable=maybe-no-member
 
 

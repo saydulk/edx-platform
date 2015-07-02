@@ -14,6 +14,7 @@ class PaginationSerializer(pagination.PaginationSerializer):
     num_pages = serializers.Field(source='paginator.num_pages')
     current_page = serializers.SerializerMethodField('get_current_page')
     start = serializers.SerializerMethodField('get_start')
+    sort_order = serializers.SerializerMethodField('get_sort_order')
 
     def get_current_page(self, page):
         """Get the current page"""
@@ -22,6 +23,10 @@ class PaginationSerializer(pagination.PaginationSerializer):
     def get_start(self, page):
         """Get the index of the first page item within the overall collection"""
         return (self.get_current_page(page) - self.start_page) * page.paginator.per_page
+
+    def get_sort_order(self, page):  # pylint: disable=unused-argument
+        """Get the order by which this collection was sorted"""
+        return self.context.get('sort_order')
 
 
 class CollapsedReferenceSerializer(serializers.HyperlinkedModelSerializer):

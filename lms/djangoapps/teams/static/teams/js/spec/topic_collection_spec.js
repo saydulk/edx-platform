@@ -36,7 +36,8 @@ define(['URI', 'underscore', 'common/js/spec_helpers/ajax_helpers', 'teams/js/co
                                 "name": "qwerty",
                                 "id": "_qwerty"
                             }
-                        ]
+                        ],
+                        "sort_order": "name"
                     },
                     {course_id: 'my/course/id', parse: true});
             });

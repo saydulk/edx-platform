@@ -14,7 +14,6 @@
 
                     this.registerSortableField('name', gettext('name'));
                     this.registerSortableField('team_count', gettext('team count'));
-                    this.sortField = 'name';
                 },
 
                 model: TopicModel

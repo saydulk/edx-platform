@@ -62,6 +62,12 @@ define(['jquery',
                 expect(collection.filterableFields['test_field'].displayName).toBe('Test Field');
             });
 
+            it('sets the sort field based on the server response', function () {
+                var sort_order = 'my_sort_order';
+                collection = new PagingCollection({sort_order: sort_order}, {parse: true});
+                expect(collection.sortField).toBe(sort_order);
+            });
+
             it('can set the sort field', function () {
                 collection.registerSortableField('test_field', 'Test Field');
                 collection.setSortField('test_field', false);

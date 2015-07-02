@@ -142,7 +142,7 @@ def _can_access_descriptor_with_start_date(user, descriptor, course_key):  # pyl
 
     Note:
         We do NOT check whether the user is staff or if the descriptor
-        is detached... it is assumed both these are checked by the caller.
+        is detached... it is assumed both of these are checked by the caller.
 
     Arguments:
         user (User): the user whose descriptor access we are checking.
@@ -361,7 +361,7 @@ def _has_access_course_desc(user, action, course):
 COURSE_OVERVIEW_SUPPORTED_ACTIONS = [  # pylint: disable=invalid-name
     'load',
     'load_mobile',
-    'view_courseware_with_prerequisites'
+    'view_courseware_with_prerequisites',
 ]
 
 
@@ -372,7 +372,7 @@ def _has_access_course_overview(user, action, course_overview):
     Arguments:
         user (User): the user whose course access we are checking.
         action (str): the action the user is trying to perform.
-            See COURSE_OVERVIEW_SUPPORTED_ACCESS_TYPES for valid values.
+            See COURSE_OVERVIEW_SUPPORTED_ACTIONS for valid values.
         course_overview (CourseOverview): overview of the course in question.
     """
     def can_load():
@@ -396,7 +396,7 @@ def _has_access_course_overview(user, action, course_overview):
     # Make sure checkers and COURSE_OVERVIEW_SUPPORTED_ACTIONS stay in sync.
     actions = checkers.keys()
     assert (
-        all(action in COURSE_OVERVIEW_SUPPORTED_ACTIONS for action in actions) and
+        all(check_action in COURSE_OVERVIEW_SUPPORTED_ACTIONS for check_action in actions) and
         len(COURSE_OVERVIEW_SUPPORTED_ACTIONS) == len(actions)
     ), "COURSE_OVERVIEW_SUPPORTED_ACTIONS and _has_access_course_overview.checkers shouldn't differ"
 

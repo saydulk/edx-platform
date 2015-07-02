@@ -495,7 +495,7 @@ class CourseOverviewAccessTestCase(ModuleStoreTestCase):
             user_attr_name (str): the name of the attribute on self that is the
                 User to test with.
             action (str): action to test with.
-                See COURSE_OVERVIEW_SUPPORTED_ACCESS_TYPES for valid values.
+                See COURSE_OVERVIEW_SUPPORTED_ACTIONS for valid values.
             course_attr_name (str): the name of the attribute on self that is
                 the CourseDescriptor to test with.
         """

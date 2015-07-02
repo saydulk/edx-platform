@@ -4,7 +4,7 @@ define([
     "URI",
     "js/views/paging",
     "js/views/paging_header",
-    "common/js/spec/components/paging_collection"
+    "common/js/components/collections/paging_collection"
 ], function ($, AjaxHelpers, URI, PagingView, PagingHeader, PagingCollection) {
 
         var createPageableItem = function(index) {
@@ -17,34 +17,37 @@ define([
         };
 
         var mockFirstPage = {
-            items: [
+            results: [
                 createPageableItem(1),
                 createPageableItem(2),
                 createPageableItem(3)
             ],
-            pageSize: 3,
-            totalCount: 4,
+            num_pages: 2,
+            page_size: 3,
+            current_page: 0,
+            count: 4,
             page: 0,
-            start: 0,
-            end: 2
+            start: 0
         };
         var mockSecondPage = {
-            items: [
+            results: [
                 createPageableItem(4)
             ],
-            pageSize: 3,
-            totalCount: 4,
+            num_pages: 2,
+            page_size: 3,
+            current_page: 1,
+            count: 4,
             page: 1,
-            start: 3,
-            end: 4
+            start: 3
         };
         var mockEmptyPage = {
-            items: [],
-            pageSize: 3,
-            totalCount: 0,
+            results: [],
+            num_pages: 1,
+            page_size: 3,
+            current_page: 0,
+            count: 0,
             page: 0,
-            start: 0,
-            end: 0
+            start: 0
         };
 
         var respondWithMockItems = function(requests) {
@@ -70,7 +73,9 @@ define([
             var pagingView;
 
             beforeEach(function () {
-                pagingView = new MockPagingView({collection: new PagingCollection()});
+                var collection = new PagingCollection();
+                collection.isZeroIndexed = true;
+                pagingView = new MockPagingView({collection: collection});
             });
 
             describe("PagingView", function () {
@@ -244,7 +249,7 @@ define([
 
                     it('should be disabled on an empty page', function () {
                         var requests = AjaxHelpers.requests(this);
-                        pagingView.setPage(1);
+                        pagingView.setPage(0);
                         AjaxHelpers.respondWithJson(requests, mockEmptyPage);
                         expect(pagingHeader.$('.next-page-link')).toHaveClass('is-disabled');
                     });

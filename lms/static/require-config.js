@@ -1,32 +1,23 @@
 ;(function (require, define) {
 
-    // Some common libraries may already have been loaded and we do not want to load them a second time.
-    // Check if it is the case and use the global var instead.
+    // We do not wish to bundle common libraries (that may also be used by non-RequireJS code on the page
+    // into the optimized files. Therefore load these libraries through script tags and explicitly define them.
+    // Note that when the optimizer executes this code, window will not be defined.
     if (window) {
-        if (window.jQuery) {
-            define("jquery", [], function() {return window.jQuery;});
-        }
-        if (window._) {
-            define("underscore", [], function() {return window._;});
-        }
-        if (window.gettext) {
-            define("gettext", [], function() {return window.gettext;});
-        }
-        if (window.Logger) {
-            define("logger", [], function() {return window.Logger;});
-        }
-        if (window.URI) {
-            define("URI", [], function() {return window.URI;});
-        }
-        if (window.Backbone) {
-            define('backbone', [], function() {return window.Backbone;});
-        }
-        if (window.tinymce) {
-            define('tinymce', [], function() {return window.tinymce;});
-        }
-        if (window.jquery && window.jquery.tinymce) {
-            define("jquery.tinymce", [], function() {return window.jquery.tinymce;});
-        }
+        var defineDependency = function (globalVariable, name) {
+            if (window[globalVariable]) {
+                define(name, [], function() {return window[globalVariable];});
+            }
+            else {
+                console.error("Expected library to be included on page, but not found on window object: " + name);
+            }
+        };
+        defineDependency("jQuery", "jquery");
+        defineDependency("_", "underscore");
+        defineDependency("gettext", "gettext");
+        defineDependency("Logger", "logger");
+        defineDependency("URI", "URI");
+        defineDependency("Backbone", "backbone");
     }
 
     require.config({

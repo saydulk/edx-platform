@@ -1223,6 +1223,8 @@ base_vendor_js = [
     'js/vendor/underscore-min.js',
     'js/vendor/require.js',
     'js/RequireJS-namespace-undefine.js',
+    'js/vendor/URI.min.js',
+    'js/vendor/backbone-min.js'
 ]
 
 main_vendor_js = base_vendor_js + [
@@ -1231,7 +1233,6 @@ main_vendor_js = base_vendor_js + [
     'js/vendor/jquery.qtip.min.js',
     'js/vendor/swfobject/swfobject.js',
     'js/vendor/jquery.ba-bbq.min.js',
-    'js/vendor/URI.min.js',
 ]
 
 dashboard_js = (

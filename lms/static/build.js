@@ -47,12 +47,12 @@
             'gettext': 'empty:',
             'coffee/src/ajax_prefix': 'empty:',
             'jquery': 'empty:',
+            'jquery.cookie': 'empty',
+            'jquery.url': 'empty',
             'backbone': 'empty:',
             'underscore': 'empty:',
             'logger': 'empty:',
-            'URI': 'empty:',
-            'tinymce': 'empty:',
-            'jquery.tinymce': 'empty:'
+            'URI': 'empty:'
         },
         /**
          * If shim config is used in the app during runtime, duplicate the config

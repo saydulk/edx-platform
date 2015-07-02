@@ -1,7 +1,7 @@
 """ Code to allow module store to interface with courseware index """
 from __future__ import absolute_import
 from abc import ABCMeta, abstractmethod
-from datetime import timedelta
+from datetime import timedelta, datetime
 import logging
 import re
 from six import add_metaclass
@@ -153,6 +153,8 @@ class SearchIndexerBase(object):
         # list - those are ready to be destroyed
         indexed_items = set()
 
+        items_index_dict = []
+
         def get_item_location(item):
             """
             Gets the version agnostic item location
@@ -234,7 +236,7 @@ class SearchIndexerBase(object):
                     item_index['start_date'] = item.start
                 item_index['content_groups'] = item_content_groups if item_content_groups else None
                 item_index.update(cls.supplemental_fields(item))
-                searcher.index(cls.DOCUMENT_TYPE, item_index)
+                items_index_dict.append(item_index)
                 indexed_count["count"] += 1
                 return item_content_groups
             except Exception as err:  # pylint: disable=broad-except
@@ -253,6 +255,7 @@ class SearchIndexerBase(object):
                 # Now index the content
                 for item in structure.get_children():
                     index_item(item, groups_usage_info=groups_usage_info)
+                searcher.index(cls.DOCUMENT_TYPE, items_index_dict)
                 cls.remove_deleted_items(searcher, structure_key, indexed_items)
         except Exception as err:  # pylint: disable=broad-except
             # broad exception so that index operation does not prevent the rest of the application from working

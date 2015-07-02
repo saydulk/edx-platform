@@ -1,5 +1,13 @@
 """
-Settings for bok choy tests
+Settings for Bok Choy tests that are used for running CMS and LMS.
+
+Bok Choy uses two different settings files:
+1. test_static_optimized is used when invoking collectstatic
+2. bok_choy is used when running CMS and LMS
+
+Note: it isn't possible to have a single settings file, because Django doesn't
+support both generating static assets to a directory and also serving static
+from the same directory.
 """
 
 import os
@@ -87,9 +95,6 @@ OPEN_ENDED_GRADING_INTERFACE['url'] = 'http://localhost:8041/'
 # Configure the LMS to use our stub EdxNotes implementation
 EDXNOTES_PUBLIC_API = 'http://localhost:8042/api/v1'
 EDXNOTES_INTERNAL_API = 'http://localhost:8042/api/v1'
-
-# Enable django-pipeline and staticfiles
-STATIC_ROOT = (TEST_ROOT / "staticfiles" / "lms").abspath()
 
 # Silence noisy logs
 import logging
